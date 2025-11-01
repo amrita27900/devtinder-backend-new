@@ -14,6 +14,7 @@ const requestRouter = require('./routes/request.js');
 const userRouter = require("./routes/user.js");
 const fileRouter = require("./routes/fileRoutes.js");
 const cors = require('cors');
+const path = require("path");
 
 
 // Connect to MongoDB
@@ -23,9 +24,9 @@ connectDb();
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}))
+    origin: ["http://localhost:5173", "https://devaadi.co.in", "http://devaadi.co.in"],
+    credentials: true
+}));
 // Test route
 app.use('/',authRouter);
 app.use('/',profileRouter);
@@ -90,6 +91,12 @@ app.patch("/user/:userId", async(req,res)=>{
         res.status(500).send("something went wrong")
     }
 })
+
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+});
 
 app.listen(4000, '0.0.0.0',() => {
   console.log("✅ Server is running on http://localhost:4000");
